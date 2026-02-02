@@ -19,9 +19,8 @@ env:
 
 jobs:
   golden-ami: 
-    runs-on: ubuntu-latest
-    name: golden-ami
-
+    runs-on: ubuntu-22.04 t
+    timeout-minutes: 10
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
