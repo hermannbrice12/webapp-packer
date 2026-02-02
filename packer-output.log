@@ -1,0 +1,32 @@
+[1;32mamazon-ebs.webapp-ami: output will be in this color.[0m
+
+[1;32m==> amazon-ebs.webapp-ami: Prevalidating any provided VPC information[0m
+[1;32m==> amazon-ebs.webapp-ami: Prevalidating AMI Name: webapp-ami-20260131151622[0m
+[1;32m==> amazon-ebs.webapp-ami: Found Image ID: ami-0963f76fac1d7c9e4[0m
+[1;32m==> amazon-ebs.webapp-ami: Creating temporary keypair: packer_697e1cc6-a0ff-f438-d888-e5a916cbe968[0m
+[1;32m==> amazon-ebs.webapp-ami: Creating temporary security group for this instance: packer_697e1cc8-1825-e5c7-9ae1-04f92eaac4b9[0m
+[1;32m==> amazon-ebs.webapp-ami: Authorizing access to port 22 from [0.0.0.0/0] in the temporary security groups...[0m
+[1;32m==> amazon-ebs.webapp-ami: Launching a source AWS instance...[0m
+[1;32m==> amazon-ebs.webapp-ami: Adding tag: "Name": "packer-vm"[0m
+[1;32m==> amazon-ebs.webapp-ami: Instance ID: i-032ef945faf6e7fa0[0m
+[1;32m==> amazon-ebs.webapp-ami: Waiting for instance (i-032ef945faf6e7fa0) to become ready...[0m
+[1;32m==> amazon-ebs.webapp-ami: Using SSH communicator to connect: 18.208.191.165[0m
+[1;32m==> amazon-ebs.webapp-ami: Waiting for SSH to become available...[0m
+[1;32m==> amazon-ebs.webapp-ami: Connected to SSH![0m
+[1;32m==> amazon-ebs.webapp-ami: Provisioning with shell script: /tmp/packer-shell1188797645[0m
+[1;31m==> amazon-ebs.webapp-ami: WARNING! Using --password via the CLI is insecure. Use --password-stdin.[0m
+[1;31m==> amazon-ebs.webapp-ami: Error response from daemon: Get "<sensitive>/v2/": dial tcp: lookup .dkr.ecr..amazonaws.com: no such host[0m
+[1;32m==> amazon-ebs.webapp-ami: Provisioning step had errors: Running the cleanup provisioner, if present...[0m
+[1;32m==> amazon-ebs.webapp-ami: Terminating the source AWS instance...[0m
+[1;32m==> amazon-ebs.webapp-ami: Cleaning up any extra volumes...[0m
+[1;32m==> amazon-ebs.webapp-ami: No volumes to clean up, skipping[0m
+[1;32m==> amazon-ebs.webapp-ami: Deleting temporary security group...[0m
+[1;32m==> amazon-ebs.webapp-ami: Deleting temporary keypair...[0m
+[1;31mBuild 'amazon-ebs.webapp-ami' errored after 2 minutes 26 seconds: Script exited with non-zero exit status: 1. Allowed exit codes are: [0][0m
+
+==> Wait completed after 2 minutes 26 seconds
+
+==> Some builds didn't complete successfully and had errors:
+--> amazon-ebs.webapp-ami: Script exited with non-zero exit status: 1. Allowed exit codes are: [0]
+
+==> Builds finished but no artifacts were created.

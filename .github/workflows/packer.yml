@@ -1,0 +1,160 @@
+---
+
+name: AWS AMI using Packer Config
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+#  schedule:
+#    # * is a special character in YAML so you have to quote this string
+#    - cron:  '0 4 * * *'
+
+env:
+  PRODUCT_VERSION: "1.9.4" # or: "latest"
+
+jobs:
+  golden-ami: 
+    runs-on: ubuntu-latest
+    name: golden-ami
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: ${{ env.PRODUCT_VERSION }}
+
+      # Initialize Packer templates
+      - name: Initialize Packer Template
+        id: init
+        run: "packer init ./golden-ami.pkr.hcl"
+
+      # validate templates
+      - name: Validate Template
+        id: validate
+        run: "packer validate ./golden-ami.pkr.hcl"
+
+      # build artifact
+      - name: Build Artifact
+        if: github.ref == 'refs/heads/main'
+        id: build-image
+        run: "packer build ./golden-ami.pkr.hcl"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+#          PACKER_LOG: 1
+
+  middleware-ami:
+    runs-on: ubuntu-latest
+    name: middleware-ami
+    needs: [golden-ami]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: ${{ env.PRODUCT_VERSION }}
+        
+      # Initialize Packer templates
+      - name: Initialize Packer Template
+        id: init
+        run: "packer init ./middleware-ami.pkr.hcl"
+
+      # validate templates
+      - name: Validate Template
+        id: validate
+        run: "packer validate ./middleware-ami.pkr.hcl"
+
+      # build artifact
+      - name: Build Artifact
+        if: github.ref == 'refs/heads/main'
+        id: build-image
+        run: "packer build -var=\"aws_account_id=${AWS_ACCOUNT_ID}\" ./middleware-ami.pkr.hcl"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+#          PACKER_LOG: 1
+
+
+  webapp-docker: 
+    runs-on: ubuntu-latest
+    name: webapp-docker
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: ${{ env.PRODUCT_VERSION }}
+
+      # Initialize Packer templates
+      - name: Initialize Packer Template
+        id: init
+        run: "packer init ./webapp-docker.pkr.hcl"
+
+      # validate templates
+      - name: Validate Template
+        id: validate
+        run: "packer validate ./webapp-docker.pkr.hcl"
+
+      # build artifact
+      - name: Build Artifact
+        if: github.ref == 'refs/heads/main'
+        id: build-image
+        run: "packer build -var=\"aws_access_key=$AWS_ACCESS_KEY_ID\" -var=\"aws_secret_key=$AWS_SECRET_ACCESS_KEY\" -var=\"ecr_login_url=https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com\" -var=\"ecr_registry=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/webapp\" ./webapp-docker.pkr.hcl"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+#          PACKER_LOG: 1
+
+  webapp-ami: 
+    runs-on: ubuntu-latest
+    name: webapp-ami
+    needs: [middleware-ami, webapp-docker]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: ${{ env.PRODUCT_VERSION }}
+
+      # Initialize Packer templates
+      - name: Initialize Packer Template
+        id: init
+        run: "packer init ./webapp-ami.pkr.hcl"
+
+      # validate templates
+      - name: Validate Template
+        id: validate
+        run: "packer validate ./webapp-ami.pkr.hcl"
+
+      # build artifact
+      - name: Build Artifact
+        id: build-image
+        run: "packer build -var=\"aws_access_key=$AWS_ACCESS_KEY_ID\" -var=\"aws_secret_key=$AWS_SECRET_ACCESS_KEY\" -var=\"aws_account_id=${AWS_ACCOUNT_ID}\" -var=\"ecr_login_url=https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com\" -var=\"ecr_registry=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/webapp\" ./webapp-ami.pkr.hcl"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+#          PACKER_LOG: 1
