@@ -1,1 +1,1 @@
-# webapp-packer
+# webapp-packer-ami
