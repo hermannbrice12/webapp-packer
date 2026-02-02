@@ -15,6 +15,7 @@ on:
 
 env:
   PRODUCT_VERSION: "1.9.4" # or: "latest"
+  PACKER_GITHUB_API_TOKEN: ${{ secrets.PACKER_GITHUB_API_TOKEN }}
 
 jobs:
   golden-ami: 
