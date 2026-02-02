@@ -46,7 +46,7 @@ jobs:
       - name: Build Artifact
         if: github.ref == 'refs/heads/main'
         id: build-image
-        run: "packer build ./golden-ami.pkr.hcl"
+        run: "packer build -var=\"aws_account_id=${AWS_ACCOUNT_ID}\" ./golden-ami.pkr.hcl"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
