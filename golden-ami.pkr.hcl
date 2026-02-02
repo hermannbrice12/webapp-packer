@@ -7,6 +7,17 @@ packer {
   }
 }
 
+variable "aws_access_key" {
+  type    = string
+  default = env("AWS_ACCESS_KEY_ID")
+}
+
+variable "aws_secret_key" {
+  type    = string
+  default = env("AWS_SECRET_ACCESS_KEY")
+  sensitive = true
+}
+
 data "amazon-ami" "golden-ami" {
   filters = {
     virtualization-type = "hvm"
@@ -22,6 +33,8 @@ locals {
 }
 
 source "amazon-ebs" "golden-ami" {
+  access_key    = var.aws_access_key    
+  secret_key    = var.aws_secret_key  
   ami_name      = "golden-ami-${local.timestamp}"
   instance_type = "t3.micro"
   region        = "us-east-1"
