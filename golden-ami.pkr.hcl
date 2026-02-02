@@ -19,6 +19,8 @@ variable "aws_secret_key" {
 }
 
 data "amazon-ami" "golden-ami" {
+  access_key = var.aws_access_key     
+  secret_key = var.aws_secret_key 
   filters = {
     virtualization-type = "hvm"
     name                = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
