@@ -7,21 +7,21 @@ packer {
   }
 }
 
-variable "aws_access_key" {
-  type    = string
-  default = env("AWS_ACCESS_KEY_ID")
-}
+# variable "aws_access_key" {
+#   type    = string
+#   default = env("AWS_ACCESS_KEY_ID")
+# }
 
-variable "aws_secret_key" {
-  type    = string
-  default = env("AWS_SECRET_ACCESS_KEY")
-  sensitive = true
-}
+# variable "aws_secret_key" {
+#   type    = string
+#   default = env("AWS_SECRET_ACCESS_KEY")
+#   sensitive = true
+# }
 
 data "amazon-ami" "golden-ami" {
   
-  region     = "us-east-1"
-  filters = {
+   region     = "us-east-1"
+   filters = {
     virtualization-type = "hvm"
     name                = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
     root-device-type    = "ebs"
