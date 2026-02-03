@@ -64,8 +64,7 @@ build {
     }
     post-processor "docker-push" {
       ecr_login      = true
-      aws_access_key = var.aws_access_key
-      aws_secret_key = var.aws_secret_key
+      
       login_server   = var.ecr_login_url
     }
   }
